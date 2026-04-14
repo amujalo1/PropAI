@@ -44,6 +44,16 @@ export function Sidebar() {
           </li>
           <li>
             <a
+              href="/ai"
+              className={`block p-2 rounded ${
+                isActive('/ai') ? 'bg-blue-600' : 'hover:bg-gray-700'
+              }`}
+            >
+              🤖 AI Center
+            </a>
+          </li>
+          <li>
+            <a
               href="/profile"
               className={`block p-2 rounded ${
                 isActive('/profile') ? 'bg-blue-600' : 'hover:bg-gray-700'

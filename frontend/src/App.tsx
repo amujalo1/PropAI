@@ -9,6 +9,7 @@ import { PropertyCreate } from '@/pages/PropertyCreate'
 import { PropertyDetails } from '@/pages/PropertyDetails'
 import { PropertyEdit } from '@/pages/PropertyEdit'
 import { Profile } from '@/pages/Profile'
+import { AICenter } from '@/pages/AICenter'
 import { Incidents } from '@/pages/Incidents'
 import { IncidentCreate } from '@/pages/IncidentCreate'
 import { IncidentDetails } from '@/pages/IncidentDetails'
@@ -59,6 +60,7 @@ function App() {
                   <Route path="/incidents/create" element={<IncidentCreate />} />
                   <Route path="/incidents/:id" element={<IncidentDetails />} />
                   <Route path="/profile" element={<Profile />} />
+                  <Route path="/ai" element={<AICenter />} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
               </main>
