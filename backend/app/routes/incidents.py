@@ -1,7 +1,6 @@
 """Incident routes"""
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from typing import List
 from app.db import get_db
 from app.models.incident import Incident, IncidentStatus
 from app.schemas.incident import IncidentCreate, IncidentResponse
@@ -15,7 +14,6 @@ async def create_incident(
     db: Session = Depends(get_db),
 ):
     """Create a new incident"""
-    # Verify property exists
     from app.models.property import Property
     property_obj = db.query(Property).filter(Property.id == incident_data.property_id).first()
     if not property_obj:
@@ -37,7 +35,7 @@ async def create_incident(
     return new_incident
 
 
-@router.get("", response_model=dict)
+@router.get("")
 async def list_incidents(
     limit: int = Query(10, ge=1, le=100),
     offset: int = Query(0, ge=0),
@@ -58,7 +56,7 @@ async def list_incidents(
     incidents = query.order_by(Incident.created_at.desc()).limit(limit).offset(offset).all()
 
     return {
-        "data": incidents,
+        "data": [IncidentResponse.model_validate(i) for i in incidents],
         "pagination": {
             "total": total,
             "limit": limit,

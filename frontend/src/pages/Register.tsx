@@ -25,6 +25,7 @@ export function Register() {
     try {
       const result = await registerMutation.mutateAsync({ email, password, name })
       localStorage.setItem('token', result.access_token)
+      window.dispatchEvent(new Event('auth-change'))
       navigate('/dashboard')
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Registration failed')

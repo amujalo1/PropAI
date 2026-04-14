@@ -19,6 +19,7 @@ export function Login() {
     try {
       const result = await loginMutation.mutateAsync({ email, password })
       localStorage.setItem('token', result.access_token)
+      window.dispatchEvent(new Event('auth-change'))
       navigate('/dashboard')
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Login failed')

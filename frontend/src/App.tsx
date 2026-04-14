@@ -8,6 +8,7 @@ import { Properties } from '@/pages/Properties'
 import { PropertyCreate } from '@/pages/PropertyCreate'
 import { PropertyDetails } from '@/pages/PropertyDetails'
 import { PropertyEdit } from '@/pages/PropertyEdit'
+import { Profile } from '@/pages/Profile'
 import { Incidents } from '@/pages/Incidents'
 import { IncidentCreate } from '@/pages/IncidentCreate'
 import { IncidentDetails } from '@/pages/IncidentDetails'
@@ -16,19 +17,27 @@ import { Register } from '@/pages/Register'
 
 const queryClient = new QueryClient()
 
-function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+// Simple auth context via window event
+function useAuth() {
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'))
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    setIsAuthenticated(!!token)
-    setIsLoading(false)
+    const handleStorage = () => {
+      setIsAuthenticated(!!localStorage.getItem('token'))
+    }
+    window.addEventListener('storage', handleStorage)
+    window.addEventListener('auth-change', handleStorage)
+    return () => {
+      window.removeEventListener('storage', handleStorage)
+      window.removeEventListener('auth-change', handleStorage)
+    }
   }, [])
 
-  if (isLoading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>
-  }
+  return isAuthenticated
+}
+
+function App() {
+  const isAuthenticated = useAuth()
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -49,6 +58,7 @@ function App() {
                   <Route path="/incidents" element={<Incidents />} />
                   <Route path="/incidents/create" element={<IncidentCreate />} />
                   <Route path="/incidents/:id" element={<IncidentDetails />} />
+                  <Route path="/profile" element={<Profile />} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
               </main>

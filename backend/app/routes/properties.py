@@ -29,7 +29,7 @@ async def create_property(
     return new_property
 
 
-@router.get("", response_model=dict)
+@router.get("")
 async def list_properties(
     limit: int = Query(10, ge=1, le=100),
     offset: int = Query(0, ge=0),
@@ -46,7 +46,7 @@ async def list_properties(
     properties = query.order_by(Property.created_at.desc()).limit(limit).offset(offset).all()
 
     return {
-        "data": properties,
+        "data": [PropertyResponse.model_validate(p) for p in properties],
         "pagination": {
             "total": total,
             "limit": limit,
@@ -84,8 +84,7 @@ async def update_property(
             detail="Property not found",
         )
 
-    # Update fields
-    update_data = property_data.dict(exclude_unset=True)
+    update_data = property_data.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(property_obj, field, value)
 

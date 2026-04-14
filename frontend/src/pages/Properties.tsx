@@ -38,6 +38,10 @@ export function Properties() {
 
       {isLoading ? (
         <div className="text-center py-8">Loading...</div>
+      ) : !data ? (
+        <div className="bg-white rounded shadow p-4">
+          <p className="text-gray-500">No properties yet. Create your first property!</p>
+        </div>
       ) : data?.data?.length ? (
         <div>
           <Table columns={columns} data={data.data} onRowClick={handleRowClick} />

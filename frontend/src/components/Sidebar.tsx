@@ -42,6 +42,16 @@ export function Sidebar() {
               Incidents
             </a>
           </li>
+          <li>
+            <a
+              href="/profile"
+              className={`block p-2 rounded ${
+                isActive('/profile') ? 'bg-blue-600' : 'hover:bg-gray-700'
+              }`}
+            >
+              My Profile
+            </a>
+          </li>
         </ul>
       </nav>
     </aside>
