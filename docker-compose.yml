@@ -1,0 +1,85 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: propai-postgres
+    environment:
+      POSTGRES_USER: propai
+      POSTGRES_PASSWORD: propai
+      POSTGRES_DB: propai
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U propai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - propai-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: propai-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - propai-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: propai-backend
+    environment:
+      DATABASE_URL: postgresql://propai:propai@postgres:5432/propai
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+      JWT_ALGORITHM: HS256
+      JWT_EXPIRATION_HOURS: 24
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - propai-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: propai-frontend
+    environment:
+      VITE_API_URL: http://localhost:8000
+      VITE_APP_NAME: PropAI
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev
+    networks:
+      - propai-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  propai-network:
+    driver: bridge
