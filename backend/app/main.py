@@ -4,11 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
 
 from app.config.settings import settings
-from app.db import init_db
-from app.routes import auth, properties, incidents, ai, ci, health, test, users
-
-# Initialize database
-init_db()
+from app.routes import auth, properties, incidents, changes, ai, ci, health, test, users
 
 # Create FastAPI app with Swagger JWT support
 app = FastAPI(
@@ -31,6 +27,7 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(auth.router)
 app.include_router(properties.router)
+app.include_router(changes.router)
 app.include_router(incidents.router)
 app.include_router(ai.router)
 app.include_router(ci.router)

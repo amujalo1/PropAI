@@ -1,40 +1,63 @@
 /**
- * Incidents list page — ITIL Incident Management
+ * Changes list page — ITIL Change Management
  */
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useIncidents } from '@/hooks'
+import { useChanges } from '@/hooks'
 import { Table } from '@/components/Table'
-import { Incident } from '@/types'
+import { Change } from '@/types'
 
 const STATUS_COLORS: Record<string, string> = {
+  DRAFT: 'bg-gray-100 text-gray-700',
   SUBMITTED: 'bg-blue-100 text-blue-700',
+  APPROVED: 'bg-green-100 text-green-700',
+  REJECTED: 'bg-red-100 text-red-700',
   IN_PROGRESS: 'bg-yellow-100 text-yellow-700',
   COMPLETED: 'bg-emerald-100 text-emerald-700',
+  FAILED: 'bg-red-200 text-red-800',
   CLOSED: 'bg-gray-200 text-gray-600',
 }
 
-export function Incidents() {
+const RISK_COLORS: Record<string, string> = {
+  LOW: 'text-green-600',
+  MEDIUM: 'text-yellow-600',
+  HIGH: 'text-orange-600',
+  CRITICAL: 'text-red-600',
+}
+
+export function Changes() {
   const navigate = useNavigate()
   const [limit] = useState(10)
   const [offset, setOffset] = useState(0)
-  const { data, isLoading } = useIncidents(limit, offset)
+  const { data, isLoading } = useChanges(limit, offset)
 
   const columns = [
+    { key: 'title', label: 'Title' },
     {
-      key: 'incident_number',
-      label: 'Number',
-      render: (row: Incident) => (
-        <span className="font-mono text-sm text-gray-600">{row.incident_number ?? '—'}</span>
+      key: 'change_type',
+      label: 'Type',
+      render: (row: Change) => (
+        <span className="text-sm font-medium">{row.change_type}</span>
       ),
     },
-    { key: 'title', label: 'Title' },
-    { key: 'category', label: 'Category' },
-    { key: 'priority', label: 'Priority' },
+    {
+      key: 'priority',
+      label: 'Priority',
+      render: (row: Change) => (
+        <span className="font-semibold">{row.priority}</span>
+      ),
+    },
+    {
+      key: 'risk',
+      label: 'Risk',
+      render: (row: Change) => (
+        <span className={`font-semibold ${RISK_COLORS[row.risk] ?? ''}`}>{row.risk}</span>
+      ),
+    },
     {
       key: 'status',
       label: 'Status',
-      render: (row: Incident) => (
+      render: (row: Change) => (
         <span className={`px-2 py-1 rounded text-xs font-semibold ${STATUS_COLORS[row.status] ?? ''}`}>
           {row.status}
         </span>
@@ -42,8 +65,8 @@ export function Incidents() {
     },
     {
       key: 'created_at',
-      label: 'Reported',
-      render: (row: Incident) => new Date(row.created_at).toLocaleDateString(),
+      label: 'Created',
+      render: (row: Change) => new Date(row.created_at).toLocaleDateString(),
     },
   ]
 
@@ -51,14 +74,14 @@ export function Incidents() {
     <div className="p-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Incidents</h1>
-          <p className="text-gray-500 mt-1">ITIL Incident Management — unplanned service disruptions</p>
+          <h1 className="text-3xl font-bold">Changes</h1>
+          <p className="text-gray-500 mt-1">ITIL Change Management — planned changes to services and assets</p>
         </div>
         <button
-          onClick={() => navigate('/incidents/create')}
-          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          onClick={() => navigate('/changes/create')}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
-          Report Incident
+          New Change
         </button>
       </div>
 
@@ -66,14 +89,14 @@ export function Incidents() {
         <div className="text-center py-8">Loading...</div>
       ) : !data?.data?.length ? (
         <div className="bg-white rounded shadow p-6">
-          <p className="text-gray-500">No incidents reported yet.</p>
+          <p className="text-gray-500">No changes yet. Create your first change request.</p>
         </div>
       ) : (
         <div>
           <Table
             columns={columns}
             data={data.data}
-            onRowClick={(row: Incident) => navigate(`/incidents/${row.id}`)}
+            onRowClick={(row: Change) => navigate(`/changes/${row.id}`)}
           />
           <div className="mt-4 flex justify-between items-center">
             <span className="text-sm text-gray-600">

@@ -2,7 +2,25 @@
 from .base import Base
 from .user import User
 from .property import Property
-from .incident import Incident
-from .ci import CI
+from .change import Change, ChangeCI, ChangeType, ChangeStatus, ChangePriority, ChangeRisk
+from .incident import Incident, IncidentImpact, IncidentUrgency, IncidentCategory
+from .ci import CI, CIType, CIStatus
 
-__all__ = ["Base", "User", "Property", "Incident", "CI"]
+__all__ = [
+    "Base",
+    "User",
+    "Property",
+    "Change",
+    "ChangeCI",
+    "ChangeType",
+    "ChangeStatus",
+    "ChangePriority",
+    "ChangeRisk",
+    "Incident",
+    "IncidentImpact",
+    "IncidentUrgency",
+    "IncidentCategory",
+    "CI",
+    "CIType",
+    "CIStatus",
+]

@@ -1,0 +1,15 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "PropAI",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "propai",
+      "Username": "propai",
+      "Password": "propai",
+      "SSLMode": "prefer",
+      "SavePassword": true
+    }
+  }
+}

@@ -10,10 +10,10 @@ from .base import Base
 
 class UserRole(str, Enum):
     """User role enumeration"""
-    ADMIN = "admin"
-    DATA_STEWARD = "data_steward"
-    CI_OWNER = "ci_owner"
-    AGENT = "agent"
+    ADMIN = "ADMIN"
+    DATA_STEWARD = "DATA_STEWARD"
+    CI_OWNER = "CI_OWNER"
+    AGENT = "AGENT"
 
 
 class User(Base):

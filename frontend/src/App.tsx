@@ -10,6 +10,9 @@ import { PropertyDetails } from '@/pages/PropertyDetails'
 import { PropertyEdit } from '@/pages/PropertyEdit'
 import { Profile } from '@/pages/Profile'
 import { AICenter } from '@/pages/AICenter'
+import { Changes } from '@/pages/Changes'
+import { ChangeCreate } from '@/pages/ChangeCreate'
+import { ChangeDetails } from '@/pages/ChangeDetails'
 import { Incidents } from '@/pages/Incidents'
 import { IncidentCreate } from '@/pages/IncidentCreate'
 import { IncidentDetails } from '@/pages/IncidentDetails'
@@ -18,7 +21,6 @@ import { Register } from '@/pages/Register'
 
 const queryClient = new QueryClient()
 
-// Simple auth context via window event
 function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'))
 
@@ -56,6 +58,11 @@ function App() {
                   <Route path="/properties/create" element={<PropertyCreate />} />
                   <Route path="/properties/:id" element={<PropertyDetails />} />
                   <Route path="/properties/:id/edit" element={<PropertyEdit />} />
+                  {/* ITIL Change Management */}
+                  <Route path="/changes" element={<Changes />} />
+                  <Route path="/changes/create" element={<ChangeCreate />} />
+                  <Route path="/changes/:id" element={<ChangeDetails />} />
+                  {/* ITIL Incident Management */}
                   <Route path="/incidents" element={<Incidents />} />
                   <Route path="/incidents/create" element={<IncidentCreate />} />
                   <Route path="/incidents/:id" element={<IncidentDetails />} />
