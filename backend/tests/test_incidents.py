@@ -4,7 +4,7 @@ import pytest
 
 def test_create_incident(client):
     """Test incident creation"""
-    # Create property first
+    # Create property first — POST /properties returns the object directly (no wrapper)
     prop_response = client.post(
         "/properties",
         json={
@@ -14,6 +14,7 @@ def test_create_incident(client):
             "price": 100000.0,
         },
     )
+    assert prop_response.status_code == 201
     property_id = prop_response.json()["id"]
 
     # Create incident
@@ -30,23 +31,23 @@ def test_create_incident(client):
     data = response.json()
     assert data["title"] == "Test Incident"
     assert data["priority"] == "P1"
-    assert data["status"] == "OPEN"
+    assert data["status"] == "SUBMITTED"   # Incidents start as SUBMITTED (ITIL)
 
 
 def test_create_incident_missing_fields(client):
-    """Test incident creation with missing fields"""
+    """Test incident creation with missing required fields (title + description required)"""
     response = client.post(
         "/incidents",
         json={
             "title": "Test Incident",
-            "priority": "P1",
+            # description is missing — required field
         },
     )
     assert response.status_code == 422
 
 
 def test_list_incidents(client):
-    """Test incident listing"""
+    """Test incident listing with pagination"""
     # Create property
     prop_response = client.post(
         "/properties",
@@ -59,7 +60,7 @@ def test_list_incidents(client):
     )
     property_id = prop_response.json()["id"]
 
-    # Create incidents
+    # Create 3 incidents
     for i in range(3):
         client.post(
             "/incidents",
@@ -109,9 +110,10 @@ def test_get_incident(client):
     assert response.status_code == 200
     data = response.json()
     assert data["title"] == "Test Incident"
+    assert data["id"] == incident_id
 
 
 def test_get_nonexistent_incident(client):
-    """Test get nonexistent incident"""
+    """Test get nonexistent incident returns 404"""
     response = client.get("/incidents/00000000-0000-0000-0000-000000000000")
     assert response.status_code == 404

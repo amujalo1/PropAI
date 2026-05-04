@@ -12,7 +12,6 @@ import {
   useFailChange,
   useCloseChange,
 } from '@/hooks'
-import { Change } from '@/types'
 
 const STATUS_COLORS: Record<string, string> = {
   DRAFT: 'bg-gray-100 text-gray-700',

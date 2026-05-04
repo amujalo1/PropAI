@@ -13,6 +13,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { path: '/dashboard', label: 'Dashboard' },
   { path: '/properties', label: 'Properties', matchPrefix: true },
+  { path: '/cmdb', label: 'CMDB', matchPrefix: true },
   { path: '/changes', label: 'Changes', matchPrefix: true },
   { path: '/incidents', label: 'Incidents', matchPrefix: true },
   { path: '/ai', label: '🤖 AI Center' },
@@ -57,6 +58,18 @@ export function Sidebar() {
         <div className="mt-6 pt-4 border-t border-gray-700">
           <p className="text-xs text-gray-500 uppercase tracking-wider px-3 mb-2">ITIL Processes</p>
           <ul className="space-y-1">
+            <li>
+              <Link
+                to="/cmdb"
+                className={`block px-3 py-2 rounded text-sm transition-colors ${
+                  location.pathname.startsWith('/cmdb')
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                }`}
+              >
+                SACM / CMDB
+              </Link>
+            </li>
             <li>
               <Link
                 to="/changes"

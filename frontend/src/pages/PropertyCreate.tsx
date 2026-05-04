@@ -4,12 +4,21 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCreateProperty } from '@/hooks'
+import { Property } from '@/types'
+
+type PropertyTypeLiteral = NonNullable<Property['type']>
 
 export function PropertyCreate() {
   const navigate = useNavigate()
   const createMutation = useCreateProperty()
   const [error, setError] = useState('')
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string
+    type: PropertyTypeLiteral
+    location: string
+    price: string
+    description: string
+  }>({
     name: '',
     type: 'residential',
     location: '',

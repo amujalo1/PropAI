@@ -16,6 +16,9 @@ import { ChangeDetails } from '@/pages/ChangeDetails'
 import { Incidents } from '@/pages/Incidents'
 import { IncidentCreate } from '@/pages/IncidentCreate'
 import { IncidentDetails } from '@/pages/IncidentDetails'
+import { CIs } from '@/pages/CIs'
+import { CICreate } from '@/pages/CICreate'
+import { CIDetails } from '@/pages/CIDetails'
 import { Login } from '@/pages/Login'
 import { Register } from '@/pages/Register'
 
@@ -66,6 +69,10 @@ function App() {
                   <Route path="/incidents" element={<Incidents />} />
                   <Route path="/incidents/create" element={<IncidentCreate />} />
                   <Route path="/incidents/:id" element={<IncidentDetails />} />
+                  {/* ITIL SACM — CMDB / Configuration Items */}
+                  <Route path="/cmdb" element={<CIs />} />
+                  <Route path="/cmdb/create" element={<CICreate />} />
+                  <Route path="/cmdb/:id" element={<CIDetails />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/ai" element={<AICenter />} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />

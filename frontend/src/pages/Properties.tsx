@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 
 export function Properties() {
   const navigate = useNavigate()
-  const [limit, setLimit] = useState(10)
+  const [limit] = useState(10)
   const [offset, setOffset] = useState(0)
   const { data, isLoading } = useProperties(limit, offset)
 

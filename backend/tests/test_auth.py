@@ -18,7 +18,7 @@ def test_register_user(client):
     assert data["access_token"]
     assert data["user"]["email"] == "test@example.com"
     assert data["user"]["name"] == "Test User"
-    assert data["user"]["role"] == "agent"
+    assert data["user"]["role"] == "AGENT"  # UserRole enum returns uppercase
 
 
 def test_register_invalid_email(client):

@@ -2,12 +2,23 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
+from contextlib import asynccontextmanager
 
 from app.config.settings import settings
+from app.db import init_db
 from app.routes import auth, properties, incidents, changes, ai, ci, health, test, users
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Run startup tasks before the app starts serving requests."""
+    init_db()
+    yield
+
 
 # Create FastAPI app with Swagger JWT support
 app = FastAPI(
+    lifespan=lifespan,
     title="PropAI",
     description="Real Estate Management Platform MVP",
     version="0.1.0",

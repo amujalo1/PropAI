@@ -7,14 +7,6 @@ import { useValuation, useMarketAnalysis, useRiskAssessment, usePricePrediction,
 
 type Tab = 'insights' | 'valuation' | 'market' | 'risk' | 'prediction'
 
-function Badge({ text, color }: { text: string; color: string }) {
-  return (
-    <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${color}`}>
-      {text}
-    </span>
-  )
-}
-
 function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
@@ -62,6 +54,24 @@ function InsightsTab() {
                 <span className="text-gray-600">Properties analysed</span>
                 <span className="font-semibold">{data.total_properties_analyzed}</span>
               </div>
+              {typeof data.active_listings === 'number' && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Active listings</span>
+                  <span className="font-semibold">{data.active_listings}</span>
+                </div>
+              )}
+              {typeof data.portfolio_total_value === 'number' && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Total portfolio value</span>
+                  <span className="font-semibold">€{data.portfolio_total_value.toLocaleString()}</span>
+                </div>
+              )}
+              {typeof data.portfolio_avg_price === 'number' && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Average price</span>
+                  <span className="font-semibold">€{data.portfolio_avg_price.toLocaleString()}</span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span className="text-gray-600">Avg value change</span>
                 <span className={`font-semibold ${data.avg_portfolio_value_change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -74,6 +84,22 @@ function InsightsTab() {
               </div>
             </div>
           </SectionCard>
+
+          {data.type_breakdown && Object.keys(data.type_breakdown).length > 0 && (
+            <div className="md:col-span-2">
+              <SectionCard title="Breakdown by Type">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {Object.entries(data.type_breakdown).map(([type, info]: [string, any]) => (
+                    <div key={type} className="bg-gray-50 rounded p-3">
+                      <p className="text-xs text-gray-500 uppercase tracking-wide">{type}</p>
+                      <p className="text-2xl font-bold mt-1">{info.count}</p>
+                      <p className="text-sm text-gray-600 mt-1">avg €{Number(info.avg_price).toLocaleString()}</p>
+                    </div>
+                  ))}
+                </div>
+              </SectionCard>
+            </div>
+          )}
 
           <div className="md:col-span-2">
             <SectionCard title="AI Recommendations">

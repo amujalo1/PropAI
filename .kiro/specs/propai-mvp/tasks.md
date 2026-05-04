@@ -48,13 +48,14 @@ This implementation plan breaks down the PropAI MVP into discrete, manageable co
     - Set up database initialization on startup
     - _Requirements: 14.1, 15.4_
 
-  - [ ]* 2.3 Write property tests for database models
+  - [x]* 2.3 Write property tests for database models
     - **Property 54: Database tables exist**
     - **Property 55: User fields stored**
     - **Property 56: Property fields stored**
     - **Property 57: Incident fields stored**
     - **Property 58: CI fields stored**
     - **Validates: Requirements 14.1, 14.2, 14.3, 14.4, 14.5**
+    - Implemented in `backend/tests/test_db_models.py` (5/5 passing against PostgreSQL `propai_test` schema)
 
 - [-] 3. Authentication Service Implementation
   - [x] 3.1 Implement user registration endpoint

@@ -3,7 +3,11 @@
  */
 import { useParams, useNavigate } from 'react-router-dom'
 import { useProperty, useUpdateProperty } from '@/hooks'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Property } from '@/types'
+
+type PropertyTypeLiteral = NonNullable<Property['type']>
+type PropertyStatusLiteral = NonNullable<Property['status']>
 
 export function PropertyEdit() {
   const { id } = useParams<{ id: string }>()
@@ -11,7 +15,14 @@ export function PropertyEdit() {
   const { data: property, isLoading } = useProperty(id!)
   const updateMutation = useUpdateProperty()
   const [error, setError] = useState('')
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string
+    type: PropertyTypeLiteral
+    location: string
+    price: string
+    description: string
+    status: PropertyStatusLiteral
+  }>({
     name: '',
     type: 'residential',
     location: '',
@@ -21,7 +32,7 @@ export function PropertyEdit() {
   })
 
   // Initialize form when property loads
-  React.useEffect(() => {
+  useEffect(() => {
     if (property) {
       setFormData({
         name: property.name,
