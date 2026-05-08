@@ -53,47 +53,206 @@ async def _seed(db: Session):
     db.refresh(admin_user)
     db.refresh(steward_user)
 
-    # Create test properties
+    # Create properties — enough per city/type for meaningful AI analysis
     props = [
+        # ── Sarajevo Residential (6) ──────────────────────────────────────
         Property(
             name="Modern Apartment Vijećnica",
             type=PropertyType.RESIDENTIAL,
-            location="Sarajevo - Stari Grad",
+            location="Sarajevo",
             status=PropertyStatus.ACTIVE,
             price=250000.0,
-            description="Beautiful modern apartment in the city center, 68m², 2nd floor",
+            description="Trosoban stan, 68m², 2. sprat, Stari Grad",
         ),
+        Property(
+            name="Studio Grbavica",
+            type=PropertyType.RESIDENTIAL,
+            location="Sarajevo",
+            status=PropertyStatus.ACTIVE,
+            price=115000.0,
+            description="Garsonjera, 32m², renovirana 2022, Grbavica",
+        ),
+        Property(
+            name="Penthouse Ilidža",
+            type=PropertyType.RESIDENTIAL,
+            location="Sarajevo",
+            status=PropertyStatus.ACTIVE,
+            price=420000.0,
+            description="Penthouse, 140m², terasa 40m², Ilidža",
+        ),
+        Property(
+            name="Dvosoban Novo Sarajevo",
+            type=PropertyType.RESIDENTIAL,
+            location="Sarajevo",
+            status=PropertyStatus.ACTIVE,
+            price=175000.0,
+            description="Dvosoban stan, 55m², Novo Sarajevo",
+        ),
+        Property(
+            name="Trosoban Hrasno",
+            type=PropertyType.RESIDENTIAL,
+            location="Sarajevo",
+            status=PropertyStatus.PENDING_REVIEW,
+            price=210000.0,
+            description="Trosoban stan, 72m², Hrasno",
+        ),
+        Property(
+            name="Kuća Vogošća",
+            type=PropertyType.RESIDENTIAL,
+            location="Sarajevo",
+            status=PropertyStatus.ACTIVE,
+            price=290000.0,
+            description="Porodična kuća, 160m², okućnica 400m², Vogošća",
+        ),
+        # ── Sarajevo Commercial (4) ───────────────────────────────────────
         Property(
             name="Office Space Marijin Dvor",
             type=PropertyType.COMMERCIAL,
-            location="Sarajevo - Centar",
+            location="Sarajevo",
             status=PropertyStatus.ACTIVE,
             price=500000.0,
-            description="Prime office space with great views, 120m²",
+            description="Poslovni prostor, 120m², Marijin Dvor",
         ),
         Property(
-            name="Land Plot Ilidža",
+            name="Retail Baščaršija",
+            type=PropertyType.COMMERCIAL,
+            location="Sarajevo",
+            status=PropertyStatus.ACTIVE,
+            price=220000.0,
+            description="Prodajni prostor, 45m², pješačka zona Baščaršija",
+        ),
+        Property(
+            name="Skladište Rajlovac",
+            type=PropertyType.COMMERCIAL,
+            location="Sarajevo",
+            status=PropertyStatus.ACTIVE,
+            price=380000.0,
+            description="Skladišno-poslovni prostor, 600m², Rajlovac",
+        ),
+        Property(
+            name="Restoran Centar",
+            type=PropertyType.COMMERCIAL,
+            location="Sarajevo",
+            status=PropertyStatus.RESERVED,
+            price=310000.0,
+            description="Ugostiteljski prostor, 90m², terasa, Centar",
+        ),
+        # ── Sarajevo Land (3) ─────────────────────────────────────────────
+        Property(
+            name="Građevinsko zemljište Ilidža",
             type=PropertyType.LAND,
-            location="Sarajevo - Ilidža",
+            location="Sarajevo",
             status=PropertyStatus.DRAFT,
             price=100000.0,
-            description="Large land plot for development, 1500m²",
+            description="Građevinsko zemljište, 1500m², Ilidža",
         ),
+        Property(
+            name="Parcela Hadžići",
+            type=PropertyType.LAND,
+            location="Sarajevo",
+            status=PropertyStatus.ACTIVE,
+            price=65000.0,
+            description="Parcela, 2200m², komunalna infrastruktura, Hadžići",
+        ),
+        Property(
+            name="Vikend parcela Pale",
+            type=PropertyType.LAND,
+            location="Sarajevo",
+            status=PropertyStatus.ACTIVE,
+            price=48000.0,
+            description="Vikend parcela, 800m², šuma, Pale",
+        ),
+        # ── Banja Luka Residential (4) ────────────────────────────────────
         Property(
             name="Family House Banja Luka",
             type=PropertyType.RESIDENTIAL,
-            location="Banja Luka - Centar",
+            location="Banja Luka",
             status=PropertyStatus.ACTIVE,
             price=320000.0,
-            description="Family house with garden, 180m², 3 bedrooms",
+            description="Porodična kuća, 180m², 3 spavaće sobe, Centar",
         ),
+        Property(
+            name="Stan Borik",
+            type=PropertyType.RESIDENTIAL,
+            location="Banja Luka",
+            status=PropertyStatus.ACTIVE,
+            price=145000.0,
+            description="Dvosoban stan, 58m², Borik",
+        ),
+        Property(
+            name="Novogradnja Lauš",
+            type=PropertyType.RESIDENTIAL,
+            location="Banja Luka",
+            status=PropertyStatus.ACTIVE,
+            price=195000.0,
+            description="Trosoban stan, 75m², novogradnja 2024, Lauš",
+        ),
+        Property(
+            name="Kuća Starčevica",
+            type=PropertyType.RESIDENTIAL,
+            location="Banja Luka",
+            status=PropertyStatus.PENDING_REVIEW,
+            price=265000.0,
+            description="Kuća, 145m², garaža, Starčevica",
+        ),
+        # ── Banja Luka Commercial (2) ─────────────────────────────────────
+        Property(
+            name="Poslovni prostor Centar BL",
+            type=PropertyType.COMMERCIAL,
+            location="Banja Luka",
+            status=PropertyStatus.ACTIVE,
+            price=280000.0,
+            description="Poslovni prostor, 85m², prizemlje, Centar",
+        ),
+        Property(
+            name="Lokal Gospodska",
+            type=PropertyType.COMMERCIAL,
+            location="Banja Luka",
+            status=PropertyStatus.ACTIVE,
+            price=175000.0,
+            description="Lokal, 40m², pješačka zona Gospodska",
+        ),
+        # ── Mostar Residential (3) ────────────────────────────────────────
+        Property(
+            name="Stan Mostar Centar",
+            type=PropertyType.RESIDENTIAL,
+            location="Mostar",
+            status=PropertyStatus.ACTIVE,
+            price=160000.0,
+            description="Dvosoban stan, 62m², Centar",
+        ),
+        Property(
+            name="Kuća Mostar",
+            type=PropertyType.RESIDENTIAL,
+            location="Mostar",
+            status=PropertyStatus.ACTIVE,
+            price=240000.0,
+            description="Kuća, 130m², dvorište, Mostar",
+        ),
+        Property(
+            name="Apartman Stari Most",
+            type=PropertyType.RESIDENTIAL,
+            location="Mostar",
+            status=PropertyStatus.ACTIVE,
+            price=185000.0,
+            description="Apartman, 50m², pogled na Stari Most, turistička zona",
+        ),
+        # ── Mostar Commercial (2) ─────────────────────────────────────────
         Property(
             name="Retail Space Mostar",
             type=PropertyType.COMMERCIAL,
-            location="Mostar - Stari Most",
+            location="Mostar",
             status=PropertyStatus.RESERVED,
             price=180000.0,
-            description="Retail unit in pedestrian zone, 65m²",
+            description="Prodajni prostor, 65m², pješačka zona Stari Most",
+        ),
+        Property(
+            name="Kafić Bulevar",
+            type=PropertyType.COMMERCIAL,
+            location="Mostar",
+            status=PropertyStatus.ACTIVE,
+            price=145000.0,
+            description="Ugostiteljski prostor, 55m², Bulevar",
         ),
     ]
     db.add_all(props)
@@ -101,9 +260,15 @@ async def _seed(db: Session):
     for p in props:
         db.refresh(p)
 
-    # ----------------------------------------------------------------------
-    # SACM — seed CMDB hierarchy: Location → Complex → Building → Property → Component
-    # ----------------------------------------------------------------------
+    # CI-jevi referišu na ključne propertije (indeksi u novom props listi)
+    # props[0]  = Modern Apartment Vijećnica (Sarajevo residential)
+    # props[6]  = Office Space Marijin Dvor  (Sarajevo commercial)
+    # props[13] = Family House Banja Luka    (BL residential)
+    # props[22] = Retail Space Mostar        (Mostar commercial)
+    prop_apartment = props[0]
+    prop_office    = props[6]
+    prop_house_bl  = props[13]
+    prop_retail_mo = props[22]
     location_sa = CI(
         ci_id="PROP-LOCA-SA-000001",
         name="Sarajevo - Novo Sarajevo",
@@ -198,7 +363,7 @@ async def _seed(db: Session):
         hierarchy_level=4,
         description="Trosoban stan, 68m², energetski razred B",
         parent_id=building_sa.id,
-        property_id=props[0].id,
+        property_id=props[0].id,  # Modern Apartment Vijećnica
         owner_id=steward_user.id,
     )
     prop_ci_office = CI(
@@ -211,7 +376,7 @@ async def _seed(db: Session):
         hierarchy_level=2,
         description="Poslovni prostor, 120m², prizemlje",
         parent_id=location_sa.id,
-        property_id=props[1].id,
+        property_id=props[6].id,  # Office Space Marijin Dvor
         owner_id=steward_user.id,
     )
     prop_ci_house = CI(
@@ -224,7 +389,7 @@ async def _seed(db: Session):
         hierarchy_level=3,
         description="Porodična kuća, 180m², 3 spavaće sobe",
         parent_id=building_bl.id,
-        property_id=props[3].id,
+        property_id=props[13].id,  # Family House Banja Luka
         owner_id=steward_user.id,
     )
     prop_ci_retail = CI(
@@ -237,7 +402,7 @@ async def _seed(db: Session):
         hierarchy_level=2,
         description="Retail jedinica, 65m², pješačka zona",
         parent_id=location_mo.id,
-        property_id=props[4].id,
+        property_id=props[22].id,  # Retail Space Mostar
         owner_id=steward_user.id,
     )
     db.add_all([prop_ci_apartment, prop_ci_office, prop_ci_house, prop_ci_retail])
@@ -319,7 +484,7 @@ async def _seed(db: Session):
             priority=ChangePriority.P4,
             risk=ChangeRisk.LOW,
             justification="Municipal decision changed zoning from agricultural to residential",
-            property_id=props[2].id,
+            property_id=props[10].id,  # Građevinsko zemljište Ilidža
             requested_by_id=steward_user.id,
         ),
     ]
@@ -368,7 +533,7 @@ async def _seed(db: Session):
             title="Broken Window — Office Marijin Dvor",
             description="Office window in unit 2B needs replacement after storm damage",
             change_type=ChangeType.EMERGENCY,
-            property_id=props[1].id,
+            property_id=props[6].id,  # Office Space Marijin Dvor
             priority=ChangePriority.P3,
             risk=ChangeRisk.MEDIUM,
             status=ChangeStatus.SUBMITTED,
@@ -455,6 +620,7 @@ async def _seed(db: Session):
         "cis": 13,
         "changes": len(changes),
         "incidents": len(incidents),
+        "note": "Seed includes 23 properties (Sarajevo: 13, Banja Luka: 6, Mostar: 4) for realistic AI analysis",
     }
 
 

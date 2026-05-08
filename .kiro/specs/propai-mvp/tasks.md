@@ -355,7 +355,7 @@ This implementation plan breaks down the PropAI MVP into discrete, manageable co
     - Use TanStack Query for data fetching
     - _Requirements: 11.1, 11.8_
 
-  - [ ] 14.2 Create PropertyCreateForm component
+  - [x] 14.2 Create PropertyCreateForm component
     - Create form with fields: name, type, location, status, price, description
     - Implement form validation
     - Call create property API endpoint
@@ -363,13 +363,13 @@ This implementation plan breaks down the PropAI MVP into discrete, manageable co
     - Display error messages on failure
     - _Requirements: 11.2, 11.3_
 
-  - [ ] 14.3 Create PropertyDetailsPage component
+  - [x] 14.3 Create PropertyDetailsPage component
     - Display all property information
     - Create edit button
     - Implement navigation back to properties list
     - _Requirements: 11.4, 11.5_
 
-  - [ ] 14.4 Create PropertyEditForm component
+  - [x] 14.4 Create PropertyEditForm component
     - Pre-fill form with current property values
     - Implement form validation
     - Call update property API endpoint
@@ -396,7 +396,7 @@ This implementation plan breaks down the PropAI MVP into discrete, manageable co
     - Use TanStack Query for data fetching
     - _Requirements: 12.1, 12.7_
 
-  - [ ] 15.2 Create IncidentCreateForm component
+  - [x] 15.2 Create IncidentCreateForm component
     - Create form with fields: title, description, property_id, priority
     - Implement property dropdown selector
     - Implement priority dropdown selector
@@ -406,7 +406,7 @@ This implementation plan breaks down the PropAI MVP into discrete, manageable co
     - Display error messages on failure
     - _Requirements: 12.2, 12.3_
 
-  - [ ] 15.3 Create IncidentDetailsPage component
+  - [x] 15.3 Create IncidentDetailsPage component
     - Display all incident information
     - Implement navigation back to incidents list
     - _Requirements: 12.4, 12.5_
@@ -445,7 +445,7 @@ This implementation plan breaks down the PropAI MVP into discrete, manageable co
     - Support submit and cancel buttons
     - _Requirements: 11.2, 12.2_
 
-  - [ ] 16.5 Create reusable Modal component
+  - [x] 16.5 Create reusable Modal component
     - Support title and content
     - Support action buttons
     - _Requirements: 11.2, 12.2_
