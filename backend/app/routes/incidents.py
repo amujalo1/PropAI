@@ -1,22 +1,8 @@
-"""Incident Management routes — ITIL Incident Management
+"""Incident Management routes — ITIL Incident Management (user-scoped)
 
-Incidents are a specialised subtype of Change (joined-table inheritance).
-Every Incident IS a Change; not every Change is an Incident.
-
-ITIL Incident lifecycle (mapped to ChangeStatus):
-  DRAFT → SUBMITTED (open) → IN_PROGRESS → COMPLETED (resolved) → CLOSED
-
-Endpoints:
-  POST   /incidents                   Create a new incident
-  GET    /incidents                   List incidents (paginated, filterable)
-  GET    /incidents/{id}              Get incident by ID
-  PUT    /incidents/{id}              Update incident
-  POST   /incidents/{id}/assign       Assign to agent
-  POST   /incidents/{id}/start        Mark as IN_PROGRESS
-  POST   /incidents/{id}/resolve      Mark as COMPLETED (resolved)
-  POST   /incidents/{id}/close        Close incident
-  POST   /incidents/{id}/cis          Add affected CI
-  DELETE /incidents/{id}/cis/{ci_id}  Remove affected CI
+Scoping rules:
+  - Regular users see/edit only incidents they reported (requested_by_id)
+  - Admins see all incidents and can approve/close any of them
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
@@ -27,8 +13,10 @@ from app.db import get_db
 from app.models.incident import Incident
 from app.models.change import ChangeCI, ChangeStatus
 from app.models.ci import CI
+from app.models.user import UserRole
 from app.schemas.incident import IncidentCreate, IncidentUpdate, IncidentResponse
 from app.schemas.change import ChangeCIAdd, ChangeCIResponse
+from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/incidents", tags=["incidents"])
 
@@ -37,20 +25,32 @@ router = APIRouter(prefix="/incidents", tags=["incidents"])
 # Helpers
 # ---------------------------------------------------------------------------
 
-_INCIDENT_COUNTER_KEY = "incident_seq"
-
-
-def _next_incident_number(db: Session) -> str:
-    """Generate the next INC-XXXXXX number."""
-    count = db.query(Incident).count()
-    return f"INC-{(count + 1):06d}"
+def _is_admin(current_user: dict) -> bool:
+    return current_user.get("role") == UserRole.ADMIN.value
 
 
 def _get_incident_or_404(incident_id: str, db: Session) -> Incident:
     incident = db.query(Incident).filter(Incident.id == incident_id).first()
     if not incident:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Incident not found")
+        raise HTTPException(status_code=404, detail="Incident not found")
     return incident
+
+
+def _assert_owner_or_admin(incident: Incident, current_user: dict):
+    if _is_admin(current_user):
+        return
+    if str(incident.requested_by_id) != current_user.get("sub"):
+        raise HTTPException(status_code=403, detail="You do not have permission to access this incident")
+
+
+def _assert_admin(current_user: dict):
+    if not _is_admin(current_user):
+        raise HTTPException(status_code=403, detail="Only admins can perform this action")
+
+
+def _next_incident_number(db: Session) -> str:
+    count = db.query(Incident).count()
+    return f"INC-{(count + 1):06d}"
 
 
 def _transition(incident: Incident, new_status: ChangeStatus, db: Session) -> Incident:
@@ -68,8 +68,9 @@ def _transition(incident: Incident, new_status: ChangeStatus, db: Session) -> In
 async def create_incident(
     data: IncidentCreate,
     db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
 ):
-    """Create a new Incident (which is also a Change)."""
+    """Report a new Incident — automatically assigned to the current user."""
     if data.property_id:
         from app.models.property import Property
         if not db.query(Property).filter(Property.id == data.property_id).first():
@@ -79,7 +80,6 @@ async def create_incident(
         record_type="incident",
         title=data.title,
         description=data.description,
-        # Incidents are always EMERGENCY change type (unplanned)
         change_type="EMERGENCY",
         priority=data.priority,
         risk=data.risk,
@@ -87,10 +87,9 @@ async def create_incident(
         implementation_plan=data.implementation_plan,
         backout_plan=data.backout_plan,
         property_id=data.property_id,
-        requested_by_id=data.requested_by_id,
+        requested_by_id=current_user["sub"],
         assigned_to_id=data.assigned_to_id,
-        status=ChangeStatus.SUBMITTED,   # Incidents start as SUBMITTED (open)
-        # Incident-specific
+        status=ChangeStatus.SUBMITTED,
         impact=data.impact,
         urgency=data.urgency,
         category=data.category,
@@ -111,9 +110,13 @@ async def list_incidents(
     category: Optional[str] = Query(None),
     property_id: Optional[str] = Query(None),
     db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
 ):
-    """List Incidents with pagination and filtering."""
+    """List incidents — users see their own, admins see all."""
     query = db.query(Incident)
+
+    if not _is_admin(current_user):
+        query = query.filter(Incident.requested_by_id == current_user["sub"])
 
     if status:
         query = query.filter(Incident.status == status)
@@ -134,9 +137,15 @@ async def list_incidents(
 
 
 @router.get("/{incident_id}", response_model=IncidentResponse)
-async def get_incident(incident_id: str, db: Session = Depends(get_db)):
-    """Get an Incident by ID."""
-    return _get_incident_or_404(incident_id, db)
+async def get_incident(
+    incident_id: str,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    """Get an incident by ID — owner or admin only."""
+    incident = _get_incident_or_404(incident_id, db)
+    _assert_owner_or_admin(incident, current_user)
+    return incident
 
 
 @router.put("/{incident_id}", response_model=IncidentResponse)
@@ -144,9 +153,11 @@ async def update_incident(
     incident_id: str,
     data: IncidentUpdate,
     db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
 ):
-    """Update an Incident."""
+    """Update an incident — owner or admin only."""
     incident = _get_incident_or_404(incident_id, db)
+    _assert_owner_or_admin(incident, current_user)
 
     if incident.status == ChangeStatus.CLOSED:
         raise HTTPException(status_code=409, detail="Cannot edit a closed incident")
@@ -168,8 +179,10 @@ async def assign_incident(
     incident_id: str,
     assigned_to_id: str = Query(..., description="UUID of the user to assign"),
     db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
 ):
-    """Assign an incident to an agent."""
+    """Assign an incident to an agent — admin only."""
+    _assert_admin(current_user)
     incident = _get_incident_or_404(incident_id, db)
     incident.assigned_to_id = assigned_to_id
     db.commit()
@@ -178,8 +191,13 @@ async def assign_incident(
 
 
 @router.post("/{incident_id}/start", response_model=IncidentResponse)
-async def start_incident(incident_id: str, db: Session = Depends(get_db)):
-    """Mark incident as IN_PROGRESS (investigation started)."""
+async def start_incident(
+    incident_id: str,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    """Mark incident as IN_PROGRESS — admin only."""
+    _assert_admin(current_user)
     incident = _get_incident_or_404(incident_id, db)
     if incident.status != ChangeStatus.SUBMITTED:
         raise HTTPException(status_code=409, detail="Only SUBMITTED incidents can be started")
@@ -192,8 +210,10 @@ async def resolve_incident(
     incident_id: str,
     resolution: str = Query(..., description="Resolution description"),
     db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
 ):
-    """Resolve an IN_PROGRESS incident."""
+    """Resolve an incident — admin only."""
+    _assert_admin(current_user)
     incident = _get_incident_or_404(incident_id, db)
     if incident.status != ChangeStatus.IN_PROGRESS:
         raise HTTPException(status_code=409, detail="Only IN_PROGRESS incidents can be resolved")
@@ -204,8 +224,13 @@ async def resolve_incident(
 
 
 @router.post("/{incident_id}/close", response_model=IncidentResponse)
-async def close_incident(incident_id: str, db: Session = Depends(get_db)):
-    """Close a COMPLETED incident."""
+async def close_incident(
+    incident_id: str,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    """Close a resolved incident — admin only."""
+    _assert_admin(current_user)
     incident = _get_incident_or_404(incident_id, db)
     if incident.status != ChangeStatus.COMPLETED:
         raise HTTPException(status_code=409, detail="Only COMPLETED (resolved) incidents can be closed")
@@ -221,9 +246,11 @@ async def add_affected_ci(
     incident_id: str,
     data: ChangeCIAdd,
     db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
 ):
-    """Associate a CI with this incident (SACM impact tracking)."""
+    """Associate a CI with this incident — owner or admin."""
     incident = _get_incident_or_404(incident_id, db)
+    _assert_owner_or_admin(incident, current_user)
 
     ci = db.query(CI).filter(CI.id == data.ci_id).first()
     if not ci:
@@ -237,11 +264,7 @@ async def add_affected_ci(
     if existing:
         raise HTTPException(status_code=409, detail="CI already associated with this incident")
 
-    assoc = ChangeCI(
-        change_id=incident.id,
-        ci_id=data.ci_id,
-        impact_description=data.impact_description,
-    )
+    assoc = ChangeCI(change_id=incident.id, ci_id=data.ci_id, impact_description=data.impact_description)
     db.add(assoc)
     db.commit()
     db.refresh(assoc)
@@ -253,9 +276,11 @@ async def remove_affected_ci(
     incident_id: str,
     ci_id: str,
     db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
 ):
-    """Remove a CI association from this incident."""
+    """Remove a CI association — owner or admin."""
     incident = _get_incident_or_404(incident_id, db)
+    _assert_owner_or_admin(incident, current_user)
 
     assoc = (
         db.query(ChangeCI)

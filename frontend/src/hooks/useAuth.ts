@@ -30,3 +30,26 @@ export const useLogout = () => {
     },
   })
 }
+
+/** Decode the JWT stored in localStorage and return the payload. */
+function decodeToken(token: string): Record<string, any> | null {
+  try {
+    const payload = token.split('.')[1]
+    return JSON.parse(atob(payload))
+  } catch {
+    return null
+  }
+}
+
+/** Returns basic info about the currently logged-in user from the JWT. */
+export const useCurrentUser = () => {
+  const token = localStorage.getItem('token')
+  if (!token) return null
+  const payload = decodeToken(token)
+  if (!payload) return null
+  return {
+    id: payload.sub as string,
+    role: payload.role as string,
+    isAdmin: payload.role === 'ADMIN',
+  }
+}

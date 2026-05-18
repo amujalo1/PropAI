@@ -3,7 +3,7 @@
  */
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useIncident, useStartIncident, useResolveIncident, useCloseIncident } from '@/hooks'
+import { useIncident, useStartIncident, useResolveIncident, useCloseIncident, useCurrentUser } from '@/hooks'
 
 const STATUS_COLORS: Record<string, string> = {
   DRAFT: 'bg-gray-100 text-gray-700',
@@ -27,6 +27,8 @@ export function IncidentDetails() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { data: incident, isLoading } = useIncident(id!)
+  const currentUser = useCurrentUser()
+  const isAdmin = currentUser?.isAdmin ?? false
   const startMutation = useStartIncident()
   const resolveMutation = useResolveIncident()
   const closeMutation = useCloseIncident()
@@ -77,7 +79,7 @@ export function IncidentDetails() {
 
       {/* Lifecycle actions */}
       <div className="flex flex-wrap gap-2 mb-8">
-        {incident.status === 'SUBMITTED' && (
+        {incident.status === 'SUBMITTED' && isAdmin && (
           <button
             onClick={() => startMutation.mutate(id!)}
             disabled={isPending}
@@ -86,7 +88,7 @@ export function IncidentDetails() {
             Start Investigation
           </button>
         )}
-        {incident.status === 'IN_PROGRESS' && !showResolveForm && (
+        {incident.status === 'IN_PROGRESS' && isAdmin && !showResolveForm && (
           <button
             onClick={() => setShowResolveForm(true)}
             className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 text-sm"
@@ -94,7 +96,7 @@ export function IncidentDetails() {
             Resolve
           </button>
         )}
-        {incident.status === 'COMPLETED' && (
+        {incident.status === 'COMPLETED' && isAdmin && (
           <button
             onClick={() => closeMutation.mutate(id!)}
             disabled={isPending}

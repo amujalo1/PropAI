@@ -14,7 +14,7 @@ export interface User {
 export interface Property {
   id: string
   name: string
-  type: 'residential' | 'commercial' | 'land'
+  type: 'RESIDENTIAL' | 'COMMERCIAL' | 'LAND'
   location: string
   status: 'DRAFT' | 'PENDING_REVIEW' | 'ACTIVE' | 'RESERVED' | 'SOLD' | 'RENTED' | 'SUSPENDED' | 'ARCHIVED'
   price: number

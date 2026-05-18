@@ -4,6 +4,8 @@ from typing import Optional, List
 from uuid import UUID
 from datetime import datetime
 
+from app.models.change import ChangeType, ChangeStatus, ChangePriority, ChangeRisk
+
 
 # ---------------------------------------------------------------------------
 # Change CI association schemas
@@ -35,9 +37,9 @@ class ChangeCreate(BaseModel):
     """Change creation request"""
     title: str = Field(..., min_length=1, max_length=255)
     description: str = Field(..., min_length=1)
-    change_type: str = Field(default="NORMAL")
-    priority: str = Field(default="P3")
-    risk: str = Field(default="MEDIUM")
+    change_type: ChangeType = ChangeType.NORMAL
+    priority: ChangePriority = ChangePriority.P3
+    risk: ChangeRisk = ChangeRisk.MEDIUM
     justification: Optional[str] = None
     implementation_plan: Optional[str] = None
     backout_plan: Optional[str] = None
@@ -53,10 +55,10 @@ class ChangeUpdate(BaseModel):
     """Change update request — all fields optional"""
     title: Optional[str] = Field(None, min_length=1, max_length=255)
     description: Optional[str] = None
-    change_type: Optional[str] = None
-    status: Optional[str] = None
-    priority: Optional[str] = None
-    risk: Optional[str] = None
+    change_type: Optional[ChangeType] = None
+    status: Optional[ChangeStatus] = None
+    priority: Optional[ChangePriority] = None
+    risk: Optional[ChangeRisk] = None
     justification: Optional[str] = None
     implementation_plan: Optional[str] = None
     backout_plan: Optional[str] = None
@@ -76,10 +78,10 @@ class ChangeResponse(BaseModel):
     record_type: str
     title: str
     description: str
-    change_type: str
-    status: str
-    priority: str
-    risk: str
+    change_type: ChangeType
+    status: ChangeStatus
+    priority: ChangePriority
+    risk: ChangeRisk
     justification: Optional[str]
     implementation_plan: Optional[str]
     backout_plan: Optional[str]

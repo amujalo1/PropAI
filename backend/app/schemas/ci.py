@@ -4,14 +4,16 @@ from typing import Optional, List
 from uuid import UUID
 from datetime import datetime
 
+from app.models.ci import CIType, CIStatus
+
 
 class CICreate(BaseModel):
     """CI creation request"""
-    type: str
+    type: CIType
     region: str = Field(..., min_length=1)
     name: Optional[str] = None
     description: Optional[str] = None
-    status: str = Field(default="ACTIVE")
+    status: CIStatus = CIStatus.ACTIVE
     parent_id: Optional[UUID] = None
     property_id: Optional[UUID] = None
     owner_id: Optional[UUID] = None
@@ -24,7 +26,7 @@ class CIUpdate(BaseModel):
     """CI update request — all fields optional"""
     name: Optional[str] = None
     description: Optional[str] = None
-    status: Optional[str] = None
+    status: Optional[CIStatus] = None
     version: Optional[str] = None
     serial_number: Optional[str] = None
     location_detail: Optional[str] = None
@@ -37,8 +39,8 @@ class CIResponse(BaseModel):
     id: UUID
     ci_id: str
     name: Optional[str]
-    type: str
-    status: str
+    type: CIType
+    status: CIStatus
     region: str
     sequence: int
     hierarchy_level: int
@@ -61,8 +63,8 @@ class CIHierarchyNode(BaseModel):
     id: str
     ci_id: str
     name: Optional[str]
-    type: str
-    status: str
+    type: CIType
+    status: CIStatus
     level: int
     children: List["CIHierarchyNode"] = []
 

@@ -1,6 +1,7 @@
 """Property model"""
-from sqlalchemy import Column, String, DateTime, Enum as SQLEnum, Numeric
+from sqlalchemy import Column, String, DateTime, Enum as SQLEnum, Numeric, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 from datetime import datetime
 import uuid
 from enum import Enum
@@ -10,9 +11,9 @@ from .base import Base
 
 class PropertyType(str, Enum):
     """Property type enumeration"""
-    RESIDENTIAL = "residential"
-    COMMERCIAL = "commercial"
-    LAND = "land"
+    RESIDENTIAL = "RESIDENTIAL"
+    COMMERCIAL = "COMMERCIAL"
+    LAND = "LAND"
 
 
 class PropertyStatus(str, Enum):
@@ -38,8 +39,11 @@ class Property(Base):
     status = Column(SQLEnum(PropertyStatus), nullable=False, default=PropertyStatus.DRAFT)
     price = Column(Numeric(15, 2), nullable=False)
     description = Column(String(1000), nullable=True)
+    owner_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True, index=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    owner = relationship("User", foreign_keys=[owner_id])
 
     def __repr__(self):
         return f"<Property(id={self.id}, name={self.name}, status={self.status})>"

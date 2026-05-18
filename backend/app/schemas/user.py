@@ -4,6 +4,8 @@ from typing import Optional
 from uuid import UUID
 from datetime import datetime
 
+from app.models.user import UserRole
+
 
 class UserRegister(BaseModel):
     """User registration request schema"""
@@ -23,7 +25,7 @@ class UserResponse(BaseModel):
     id: UUID
     email: str
     name: str
-    role: str
+    role: UserRole
     created_at: datetime
     updated_at: datetime
 

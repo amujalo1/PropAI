@@ -24,7 +24,7 @@ export function PropertyEdit() {
     status: PropertyStatusLiteral
   }>({
     name: '',
-    type: 'residential',
+    type: 'RESIDENTIAL',
     location: '',
     price: '',
     description: '',
@@ -114,9 +114,9 @@ export function PropertyEdit() {
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
               >
-                <option value="residential">Residential</option>
-                <option value="commercial">Commercial</option>
-                <option value="land">Land</option>
+                <option value="RESIDENTIAL">Residential</option>
+                <option value="COMMERCIAL">Commercial</option>
+                <option value="LAND">Land</option>
               </select>
             </div>
 

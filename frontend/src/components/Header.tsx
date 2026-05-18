@@ -9,9 +9,13 @@ export function Header() {
   const logoutMutation = useLogout()
 
   const handleLogout = async () => {
-    await logoutMutation.mutateAsync()
-    localStorage.removeItem('token')
-    navigate('/login')
+    try {
+      await logoutMutation.mutateAsync()
+    } finally {
+      localStorage.removeItem('token')
+      window.dispatchEvent(new Event('auth-change'))
+      navigate('/login')
+    }
   }
 
   return (

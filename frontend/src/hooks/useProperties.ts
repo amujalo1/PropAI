@@ -1,7 +1,7 @@
 /**
  * Properties hooks
  */
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import apiClient from '@/services/api'
 import { Property } from '@/types'
 
@@ -22,34 +22,47 @@ export const useProperty = (id: string) => {
     queryKey: ['property', id],
     queryFn: async () => {
       const response = await apiClient.get(`/properties/${id}`)
-      return response.data
+      return response.data as Property
     },
+    enabled: !!id,
   })
 }
 
 export const useCreateProperty = () => {
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (data: Partial<Property>) => {
       const response = await apiClient.post('/properties', data)
-      return response.data
+      return response.data as Property
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['properties'] })
     },
   })
 }
 
 export const useUpdateProperty = () => {
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Property> }) => {
       const response = await apiClient.put(`/properties/${id}`, data)
-      return response.data
+      return response.data as Property
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['properties'] })
+      queryClient.invalidateQueries({ queryKey: ['property', variables.id] })
     },
   })
 }
 
 export const useDeleteProperty = () => {
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await apiClient.delete(`/properties/${id}`)
-      return response.data
+      await apiClient.delete(`/properties/${id}`)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['properties'] })
     },
   })
 }
