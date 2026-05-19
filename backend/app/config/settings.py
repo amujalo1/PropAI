@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     # Redis
     redis_url: str = "redis://localhost:6379"
 
+    # AI
+    gemini_api_key: str = ""
+
     # Server
     backend_host: str = "0.0.0.0"
     backend_port: int = 8000

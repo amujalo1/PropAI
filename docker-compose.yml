@@ -44,6 +44,7 @@ services:
       JWT_ALGORITHM: HS256
       JWT_EXPIRATION_HOURS: 24
       REDIS_URL: redis://redis:6379
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     ports:
       - "8000:8000"
     depends_on:
